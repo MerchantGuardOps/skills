@@ -69,8 +69,12 @@ if (json) {
   }
   console.log("");
   console.log("--- Performance ---");
-  console.log("Latency:", data.latency, "ms");
-  console.log("Generation time:", data.generation_time, "ms");
+  if (data.latency != null) {
+    console.log("Latency:", data.latency, "ms");
+  }
+  if (data.generation_time != null) {
+    console.log("Generation time:", data.generation_time, "ms");
+  }
   if (data.moderation_latency != null) {
     console.log("Moderation latency:", data.moderation_latency, "ms");
   }
