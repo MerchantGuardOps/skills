@@ -8,8 +8,9 @@ const generationId =
   (args.get("_0") as string | undefined);
 
 if (!generationId) {
-  console.error("Usage: npx tsx get-generation-content.ts <generation-id>");
-  console.error("       npx tsx get-generation-content.ts --id gen-1234567890");
+  console.error("Usage: npx tsx get-generation-content.ts <generation-id> [--json]");
+  console.error("       npx tsx get-generation-content.ts --id gen-1234567890 [--json]");
+  console.error("Note: --json must come AFTER the positional ID.");
   console.error("");
   console.error("Returns the stored prompt and completion content:");
   console.error("  - Input: original prompt text and messages array");
