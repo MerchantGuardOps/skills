@@ -92,6 +92,12 @@ When `granularity` is set and no `order_by` is specified, results are ordered by
       "row_count": 2,
       "truncated": false
     },
+    "label_map": {
+      "api_key_id": { "123": "Production Key" },
+      "app": { "42": "My App" },
+      "user": { "user_abc": "alice@example.com" },
+      "workspace": { "ws-uuid-1": "Engineering" }
+    },
     "cachedAt": 1747699200000
   }
 }
@@ -105,6 +111,7 @@ When `granularity` is set and no `order_by` is specified, results are ordered by
 | `data.metadata.query_time_ms` | Query execution time in milliseconds |
 | `data.metadata.row_count` | Number of rows returned |
 | `data.metadata.truncated` | `true` if results were truncated at the limit |
+| `data.label_map` | Maps raw dimension values to human-readable labels. Present when the query includes resolvable dimensions (`api_key_id`, `app`, `user`, `workspace`). Data rows already contain the resolved names — this map provides the original ID→name mapping |
 | `data.cachedAt` | Unix timestamp (ms) when the result was cached. Present when the response was served from cache |
 
 ## CLI Reference

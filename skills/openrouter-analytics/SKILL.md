@@ -118,6 +118,7 @@ When interpreting results for the user:
 - **Rates** (`cache_hit_rate`) are 0–1 ratios
 - **Throughput** (`avg_throughput`) is tokens per second
 - When `granularity` is set, rows include a `date` field for the time bucket
+- **Label resolution**: dimensions `api_key_id`, `app`, `user`, and `workspace` have their raw IDs replaced with human-readable names (key name, app title, email, workspace name). The response includes a `label_map` with the original ID→name mappings
 
 ### Cost Optimization Guidance
 

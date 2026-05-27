@@ -31,10 +31,10 @@ cd <openrouter-analytics-skill-path>/scripts && npx tsx discover-schema.ts
 {
   "data": {
     "metrics": [
-      { "name": "request_count", "display_label": "Request Count", "available_in": ["mv", "generations"], "is_rate": false }
+      { "name": "request_count", "display_label": "Request Count", "is_rate": false }
     ],
     "dimensions": [
-      { "name": "model", "display_label": "Model", "available_in": ["mv", "generations"] }
+      { "name": "model", "display_label": "Model" }
     ],
     "operators": [
       { "name": "eq", "value_type": "scalar" }
@@ -54,15 +54,14 @@ Each metric has:
 |---|---|
 | `name` | Identifier to use in query requests |
 | `display_label` | Human-readable label |
-| `available_in` | Which data sources support this metric |
 | `is_rate` | Whether this is a ratio/rate (averaged, not summed) |
 
 ### Data Sources
 
-- `mv` — Materialized views (pre-aggregated). Fast, supports longer time ranges (up to 365 days for daily granularity). Available for most volume/cost metrics.
-- `generations` — Raw generations table. Required for latency, throughput, and per-generation dimensions like `provider`, `origin`, `finish_reason`. Limited to 31-day range.
+The query engine uses two data sources and automatically picks the optimal one based on the requested metrics and dimensions:
 
-When a metric is `available_in: ["mv", "generations"]`, the query engine automatically picks the optimal source. When it's only `available_in: ["generations"]`, queries are limited to 31-day ranges.
+- **Materialized views (MV)** — Pre-aggregated. Fast, supports longer time ranges (up to 365 days for daily granularity). Available for most volume/cost metrics.
+- **Generations** — Raw generations table. Required for latency, throughput, and per-generation dimensions like `provider`, `origin`, `finish_reason`. Limited to 31-day range.
 
 ### Metric Categories
 
@@ -71,9 +70,12 @@ When a metric is `available_in: ["mv", "generations"]`, the query engine automat
 - `tokens_total`, `tokens_prompt`, `tokens_completion` — token counts
 - `reasoning_tokens` — tokens used for extended thinking
 - `cached_tokens` — tokens served from cache
+- `byok_request_count` — number of BYOK requests
 
 **Cost metrics** (how much money):
 - `total_usage` — total cost in USD
+- `byok_usage` — cost from bring-your-own-key requests
+- `credits_usage` — cost from credit-funded requests
 
 **Performance metrics** (how fast):
 - `avg_latency`, `p50_latency`, `p90_latency`, `p99_latency` — response latency in milliseconds
@@ -81,7 +83,9 @@ When a metric is `available_in: ["mv", "generations"]`, the query engine automat
 
 **Efficiency metrics** (how well):
 - `cache_hit_rate` — ratio of cached tokens to prompt tokens (0–1)
+- `guardrail_invoked_count` — number of requests that triggered guardrails
 - `guardrail_invoked_rate` — ratio of requests that triggered guardrails
+- `response_cached_count` — number of responses served from cache
 - `response_cached_rate` — ratio of responses served from cache
 
 ## Understanding Dimensions
@@ -92,11 +96,23 @@ Each dimension has:
 |---|---|
 | `name` | Identifier to use in query requests |
 | `display_label` | Human-readable label |
-| `available_in` | Which data sources support this dimension |
 
 Dimensions are what you break down by — "show me spend *by model*" means `dimensions: ["model"]`.
 
 You can combine up to 2 dimensions in a single query (e.g., `["model", "provider"]`).
+
+### Label Resolution
+
+Some dimensions return raw IDs that the query endpoint automatically resolves to human-readable labels. When you query with these dimensions, data rows contain the resolved names and the response includes a `label_map` for the ID→name mapping:
+
+| Dimension | Raw value | Resolved to |
+|---|---|---|
+| `api_key_id` | Numeric ID | Key name/label |
+| `app` | Numeric ID | App title or origin URL |
+| `user` | Clerk user ID | Email address |
+| `workspace` | UUID | Workspace name |
+
+All other dimensions (e.g., `model`, `provider`, `country`) are returned as-is without resolution.
 
 ### Dimension Categories
 
