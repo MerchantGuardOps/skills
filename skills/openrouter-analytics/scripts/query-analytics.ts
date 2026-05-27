@@ -43,11 +43,12 @@ if (filterParts.length > 0 && filterParts.length < 3) {
   process.exit(1);
 }
 if (filterField && filterOp && filterValue) {
-  const numericValue = Number(filterValue);
-  const coercedValue = !isNaN(numericValue) ? numericValue : filterValue;
+  const comparisonOps = new Set(["gt", "gte", "lt", "lte"]);
   const value = filterOp === "in" || filterOp === "not_in"
-    ? filterValue.split(",").map((v) => { const n = Number(v.trim()); return !isNaN(n) ? n : v.trim(); }).filter(Boolean)
-    : coercedValue;
+    ? filterValue.split(",").map((v) => v.trim()).filter((v) => v !== "")
+    : comparisonOps.has(filterOp) && !isNaN(Number(filterValue))
+      ? Number(filterValue)
+      : filterValue;
   body.filters = [{ field: filterField, operator: filterOp, value }];
 }
 

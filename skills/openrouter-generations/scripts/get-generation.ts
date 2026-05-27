@@ -27,7 +27,13 @@ const json = args.has("json");
 if (json) {
   console.log(JSON.stringify(result, null, 2));
 } else {
-  const data = (result as { data: Record<string, unknown> }).data;
+  const data = (result as { data: Record<string, unknown> | null }).data;
+  if (!data) {
+    console.log("Generation:", generationId);
+    console.log("");
+    console.log("No metadata available for this generation.");
+    process.exit(0);
+  }
   console.log("Generation:", data.id);
   console.log("Model:", data.model);
   console.log("Provider:", data.provider_name ?? "unknown");

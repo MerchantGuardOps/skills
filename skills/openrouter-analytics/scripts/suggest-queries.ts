@@ -86,7 +86,7 @@ const TEMPLATES = [
 
 const now = new Date();
 const todayStart = new Date(now);
-todayStart.setHours(0, 0, 0, 0);
+todayStart.setUTCHours(0, 0, 0, 0);
 const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
 function resolve(s: string): string {
