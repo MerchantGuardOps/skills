@@ -8,8 +8,9 @@ const generationId =
   (args.get("_0") as string | undefined);
 
 if (!generationId) {
-  console.error("Usage: npx tsx get-generation.ts <generation-id>");
-  console.error("       npx tsx get-generation.ts --id gen-1234567890");
+  console.error("Usage: npx tsx get-generation.ts <generation-id> [--json]");
+  console.error("       npx tsx get-generation.ts --id gen-1234567890 [--json]");
+  console.error("Note: --json must come AFTER the positional ID.");
   console.error("");
   console.error("Returns request metadata and usage data for a generation:");
   console.error("  - Model, provider, and routing info");
