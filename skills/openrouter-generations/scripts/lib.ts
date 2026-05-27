@@ -37,19 +37,18 @@ async function fetchApi(
     params?: Record<string, string>;
   }
 ): Promise<unknown> {
-  const url = new URL(`${BASE_URL}/api/v1${path}`);
-  if (opts.params) {
-    for (const [key, value] of Object.entries(opts.params)) {
-      url.searchParams.set(key, value);
-    }
-  }
-
   const headers: Record<string, string> = {
     Authorization: `Bearer ${opts.apiKey}`,
   };
 
   let res: Response;
   try {
+    const url = new URL(`${BASE_URL}/api/v1${path}`);
+    if (opts.params) {
+      for (const [key, value] of Object.entries(opts.params)) {
+        url.searchParams.set(key, value);
+      }
+    }
     res = await fetch(url.toString(), { headers });
   } catch (err) {
     console.error(

@@ -3,7 +3,7 @@ import { requireApiKey, fetchQuery, parseArgs } from "./lib.js";
 const args = parseArgs(process.argv.slice(2));
 const apiKey = requireApiKey(args);
 
-const metrics = (args.get("metrics") as string | undefined)?.split(",") ?? [];
+const metrics = (args.get("metrics") as string | undefined)?.split(",").filter(Boolean) ?? [];
 if (metrics.length === 0) {
   console.error("Error: --metrics is required (comma-separated list).\n");
   console.error("Example: --metrics request_count,total_usage");
@@ -15,7 +15,7 @@ const body: Record<string, unknown> = { metrics };
 
 const dimensions = args.get("dimensions") as string | undefined;
 if (dimensions) {
-  body.dimensions = dimensions.split(",");
+  body.dimensions = dimensions.split(",").filter(Boolean);
 }
 
 const granularity = args.get("granularity") as string | undefined;
@@ -43,9 +43,11 @@ if (filterParts.length > 0 && filterParts.length < 3) {
   process.exit(1);
 }
 if (filterField && filterOp && filterValue) {
+  const numericValue = Number(filterValue);
+  const coercedValue = !isNaN(numericValue) ? numericValue : filterValue;
   const value = filterOp === "in" || filterOp === "not_in"
-    ? filterValue.split(",").map((v) => v.trim()).filter(Boolean)
-    : filterValue;
+    ? filterValue.split(",").map((v) => { const n = Number(v.trim()); return !isNaN(n) ? n : v.trim(); }).filter(Boolean)
+    : coercedValue;
   body.filters = [{ field: filterField, operator: filterOp, value }];
 }
 
